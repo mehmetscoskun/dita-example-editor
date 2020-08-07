@@ -78,6 +78,14 @@ const StructureToolbar = () => (
 										</Drop>
 									)}
 								/>
+								<MenuItemWithDrop
+									label="Relationship table"
+									renderDrop={() => (
+										<Drop>
+											<FxOperationInsertTableMenu operationName=":insert-reltable" />
+										</Drop>
+									)}
+								/>
 							</MenuGroup>
 
 							<MenuGroup>

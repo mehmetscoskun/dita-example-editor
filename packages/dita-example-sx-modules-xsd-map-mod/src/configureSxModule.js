@@ -1,10 +1,22 @@
+import configurationManager from 'fontoxml-configuration/src/configurationManager.js';
+import configureAsBasicTableElements from 'fontoxml-table-flow-basic/src/configureAsBasicTableElements.js';
+import configureAsInlineFrame from 'fontoxml-families/src/configureAsInlineFrame.js';
+import configureAsInlineLink from 'fontoxml-families/src/configureAsInlineLink.js';
+import configureAsInlineStructure from 'fontoxml-families/src/configureAsInlineStructure.js';
 import configureAsMapSheetFrame from 'fontoxml-dita/src/configureAsMapSheetFrame.js';
 import configureAsRemoved from 'fontoxml-families/src/configureAsRemoved.js';
 import configureAsStructure from 'fontoxml-families/src/configureAsStructure.js';
 import configureAsTitleFrame from 'fontoxml-families/src/configureAsTitleFrame.js';
+import configureProperties from 'fontoxml-families/src/configureProperties.js';
+import createIconWidget from 'fontoxml-families/src/createIconWidget.js';
 import createMarkupLabelWidget from 'fontoxml-families/src/createMarkupLabelWidget.js';
 import createRelatedNodesQueryWidget from 'fontoxml-families/src/createRelatedNodesQueryWidget.js';
+import evaluateXPathToBoolean from 'fontoxml-selectors/src/evaluateXPathToBoolean.js';
+import evaluateXPathToString from 'fontoxml-selectors/src/evaluateXPathToString.js';
+import readOnlyBlueprint from 'fontoxml-blueprints/src/readOnlyBlueprint.js';
 import t from 'fontoxml-localization/src/t.js';
+
+const mapUsesPermanentReferences = configurationManager.get('map-manager-use-permanent-references');
 
 export default function configureSxModule(sxModule) {
 	// anchor
@@ -19,7 +31,7 @@ export default function configureSxModule(sxModule) {
 		titleQuery:
 			'title//text()[not(ancestor::*[name() = ("sort-at", "draft-comment", "foreign", "unknown", "required-cleanup", "image")])]/string() => string-join()',
 		variation: 'compact-vertical',
-		visibleChildSelectorOrNodeSpec: 'self::title',
+		visibleChildSelectorOrNodeSpec: 'self::title or self::reltable',
 		blockFooter: [
 			createRelatedNodesQueryWidget(
 				'descendant::fn[not(@conref) and fonto:in-inline-layout(.)]'
@@ -37,19 +49,78 @@ export default function configureSxModule(sxModule) {
 	configureAsRemoved(sxModule, 'self::navref', t('navref'));
 
 	// relcell
-	configureAsRemoved(sxModule, 'self::relcell', t('relcell'));
+	configureProperties(sxModule, 'self::relcell', {
+		markupLabel: t('cell'),
+		contextualOperations: [
+			{ name: ':contextual-insert-topicref--reltable', hideIn: ['context-menu'] },
+			{ name: ':contextual-edit-topicref--reltable', hideIn: ['context-menu'] },
+			{ name: ':contextual-open-properties-panel-for-relcell', hideIn: ['context-menu'] },
+			{ name: ':contextual-remove-all-topicrefs--reltable', hideIn: ['context-menu'] }
+		]
+	});
 
 	// relcolspec
-	configureAsRemoved(sxModule, 'self::relcolspec', t('relcolspec'));
+	configureProperties(sxModule, 'self::relcolspec', {
+		markupLabel: t('header cell'),
+		contextualOperations: [
+			{ name: ':contextual-insert-topicref--reltable', hideIn: ['context-menu'] },
+			{ name: ':contextual-edit-topicref--reltable', hideIn: ['context-menu'] },
+			{ name: ':contextual-open-properties-panel-for-relcell', hideIn: ['context-menu'] },
+			{ name: ':contextual-remove-all-topicrefs--reltable', hideIn: ['context-menu'] }
+		]
+	});
 
 	// relheader
-	configureAsRemoved(sxModule, 'self::relheader', t('relheader'));
+	configureProperties(sxModule, 'self::relheader', {
+		markupLabel: t('header row')
+	});
 
 	// relrow
-	configureAsRemoved(sxModule, 'self::relrow', t('relrow'));
+	configureProperties(sxModule, 'self::relrow', {
+		markupLabel: t('row')
+	});
 
 	// reltable
-	configureAsRemoved(sxModule, 'self::reltable', t('reltable'));
+	configureAsBasicTableElements(sxModule, {
+		table: {
+			localName: 'reltable'
+		},
+		headerRow: {
+			localName: 'relheader'
+		},
+		headerCell: {
+			localName: 'relcolspec'
+		},
+		row: {
+			localName: 'relrow'
+		},
+		cell: {
+			localName: 'relcell'
+		},
+		columnBefore: [
+			function(sourceNode, renderer) {
+				if (
+					evaluateXPathToBoolean('not(self::relcolspec)', sourceNode, readOnlyBlueprint)
+				) {
+					return null;
+				}
+				const typeValue = evaluateXPathToString('@type', sourceNode, readOnlyBlueprint);
+				return createIconWidget('edit', {
+					tooltipContent: typeValue,
+					clickPopoverComponentName: 'RelcolspecTypePopover',
+					popoverData: {
+						initialTypeValue: typeValue
+					}
+				})(sourceNode, renderer);
+			}
+		],
+		showInsertionWidget: true,
+		showHighlightingWidget: true
+	});
+	configureProperties(sxModule, 'self::reltable', {
+		markupLabel: t('relationship table'),
+		blockHeaderLeft: [createMarkupLabelWidget()]
+	});
 
 	// searchtitle
 	configureAsRemoved(sxModule, 'self::searchtitle', t('searchtitle'));
@@ -89,6 +160,17 @@ export default function configureSxModule(sxModule) {
 
 	configureAsStructure(sxModule, 'self::topicmeta[parent::topichead]', undefined);
 
+	configureAsInlineFrame(
+		sxModule,
+		'self::topicmeta[parent::*[fonto:dita-class(., "map/topicref")][parent::relcell or parent::relcolspec]]',
+		undefined,
+		{
+			isAutoremovableIfEmpty: true,
+			defaultTextContainer: 'navtitle',
+			showWhen: 'never'
+		}
+	);
+
 	// navtitle in topicmeta in topichead
 	configureAsTitleFrame(
 		sxModule,
@@ -99,8 +181,71 @@ export default function configureSxModule(sxModule) {
 		}
 	);
 
+	// navtitle in topicmeta in topicref in reltable
+	configureAsInlineStructure(
+		sxModule,
+		'self::navtitle[parent::topicmeta[parent::*[fonto:dita-class(., "map/topicref")][parent::relcell or parent::relcolspec]]]',
+		undefined
+	);
+
 	// topicref
 	configureAsRemoved(sxModule, 'self::topicref', t('link to topic'));
+
+	configureAsInlineLink(
+		sxModule,
+		'self::*[fonto:dita-class(., "map/topicref") and @href and (parent::relcell or parent::relcolspec)]',
+		t('link'),
+		'href',
+		{
+			priority: 3,
+			contextualOperations: [
+				{
+					contents: [
+						{ name: ':topicref-move-up--reltable' },
+						{ name: ':topicref-move-down--reltable' }
+					]
+				},
+				{
+					contents: [
+						{ name: ':topicref-move-up--in-relcell' },
+						{ name: ':topicref-move-down--in-relcell' },
+						{ name: ':topicref-move-right--in-relcell' },
+						{ name: ':topicref-move-left--in-relcell' }
+					]
+				},
+				{
+					contents: [
+						{
+							name: ':contextual-open-properties-panel-for-topicref'
+						}
+					]
+				}
+			],
+			inlineBefore: [createIconWidget('link')],
+			emptyElementPlaceholderText: 'type the link text',
+			defaultTextContainer: 'topicmeta',
+			popoverComponentName: 'DitaCrossReferencePopover',
+			popoverData: {
+				deleteOperationName: ':contextual-remove-topicref--reltable',
+				targetIsPermanentId: mapUsesPermanentReferences,
+				targetQuery: '@href'
+			}
+		}
+	);
+
+	configureProperties(
+		sxModule,
+		'self::*[fonto:dita-class(., "map/topicref") and @href and (parent::relcell or parent::relcolspec) and preceding-sibling::*[fonto:dita-class(., "map/topicref")]]',
+		{
+			priority: 4,
+			inlineBefore: [
+				() => {
+					return '\n';
+				},
+				createIconWidget('link')
+			]
+		}
+	);
 
 	// ux-window
 	configureAsRemoved(sxModule, 'self::ux-window', t('ux-window'));

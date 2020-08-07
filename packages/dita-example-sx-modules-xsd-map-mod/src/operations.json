@@ -1,0 +1,123 @@
+{
+	":insert-reltable": {
+		"label": "t__Relationship table",
+		"description": "t__A table that specifies relationships among topics.",
+		"icon": "table",
+		"initialData": {
+			"hasHeader": true,
+			"rows": 1,
+			"columns": 1
+		},
+		"steps": [
+			{
+				"type": "transform/setContextNodeIdToSelectionAncestor",
+				"data": {
+					"selectionAncestorNodeSpec": "fonto:dita-class(., 'map/map')"
+				}
+			},
+			{
+				"type": "transform/setStructureForReltable"
+			},
+			{
+				"type": "operation/append-structure",
+				"data": {
+					"childNodeStructure": "{{tableStencil}}"
+				}
+			}
+		]
+	},
+
+	":_do-not-submit-empty-array": {
+		"steps": {
+			"type": "transform/disableWhenSelectedItemsIsEmptyArray"
+		}
+	},
+	":contextual-insert-topicref--reltable": {
+		"label": "t__Add links to topics",
+		"description": "t__Link one or multiple topics for this cell",
+		"steps": [
+			{
+				"type": "operation/open-project-browser-modal-with-multi-select",
+				"data": {
+					"prevSelectedItems": [],
+					"selectedItems": [],
+					"modalTitle": "t__Select topic(s)",
+					"insertOperationName": ":_do-not-submit-empty-array",
+					"showCheckboxSelector": "(self::*[fonto:dita-class(., 'topic/topic') or fonto:dita-class(., 'map/map')][not(parent::*)] and fonto:hierarchy-source-node(fonto:current-hierarchy-node-id())) or self::*[fonto:dita-class(., 'map/topicref') and @href]"
+				}
+			},
+			{
+				"type": "custom-mutation/update-relcell-child-elements",
+				"data": {
+					"contextNodeId": "x__if($data('contextNode')[child::*[fonto:dita-class(., 'map/topicref')]]) then () else $data('contextNode')"
+				}
+			}
+		]
+	},
+
+	":contextual-edit-topicref--reltable": {
+		"label": "t__Edit links to topics",
+		"description": "t__Link one or multiple topics for this cell",
+		"steps": [
+			{
+				"type": "transform/setSelectedItemsForTopicrefs"
+			},
+			{
+				"type": "operation/open-project-browser-modal-with-multi-select",
+				"data": {
+					"prevSelectedItems": "{{selectedItems}}",
+					"modalTitle": "t__Select topic(s)",
+					"modalPrimaryButtonLabel": "t__Save",
+					"showCheckboxSelector": "(self::*[fonto:dita-class(., 'topic/topic') or fonto:dita-class(., 'map/map')][not(parent::*)] and fonto:hierarchy-source-node(fonto:current-hierarchy-node-id())) or self::*[fonto:dita-class(., 'map/topicref') and @href]"
+				}
+			},
+			{
+				"type": "custom-mutation/update-relcell-child-elements",
+				"data": {
+					"contextNodeId": "x__if($data('contextNode')[child::*[fonto:dita-class(., 'map/topicref')]]) then $data('contextNode') else ()"
+				}
+			}
+		]
+	},
+
+	":contextual-remove-topicref--reltable": {
+		"label": "t__Remove",
+		"description": "t__Remove this topic link",
+		"icon": "times",
+		"steps": {
+			"type": "operation/delete-node"
+		}
+	},
+
+	":contextual-remove-all-topicrefs--reltable": {
+		"label": "t__Remove all links",
+		"description": "t__Remove all links to topics in this cell",
+		"icon": "times",
+		"steps": {
+			"type": "custom-mutation/update-relcell-child-elements",
+			"data": {
+				"prevSelectedItems": [],
+				"selectedItems": [],
+				"contextNodeId": "x__if($data('contextNode')[child::*[fonto:dita-class(., 'map/topicref')]]) then $data('contextNode') else ()"
+			}
+		}
+	},
+
+	":contextual-open-properties-panel-for-relcell": {
+		"label": "t__Edit properties",
+		"description": "t__Open the properties sidebar for this table cell",
+		"icon": "fas fa-sliders",
+		"steps": {
+			"type": "operation/open-attributes-editor-for-node"
+		}
+	},
+
+	":contextual-open-properties-panel-for-topicref": {
+		"label": "t__Edit properties",
+		"description": "t__Open the properties sidebar for this link",
+		"icon": "fas fa-sliders",
+		"steps": {
+			"type": "operation/open-attributes-editor-for-node"
+		}
+	}
+}

@@ -1,0 +1,67 @@
+{
+	":topicref-move-up--reltable": {
+		"label": "t__Move up in cell",
+		"description": "t__Move this link up.",
+		"icon": "arrow-up",
+		"steps": {
+			"type": "operation/swap-with-previous-element"
+		}
+	},
+
+	":topicref-move-down--reltable": {
+		"label": "t__Move down in cell",
+		"description": "t__Move this link down.",
+		"icon": "arrow-down",
+		"steps": {
+			"type": "operation/swap-with-next-element"
+		}
+	},
+
+	":topicref-move-up--in-relcell": {
+		"label": "t__Move one cell up",
+		"description": "t__Move this link one cell up.",
+		"icon": "arrow-up",
+		"steps": {
+			"type": "custom-mutation/move-topicref-to-cell",
+			"data": {
+				"direction": "up"
+			}
+		}
+	},
+
+	":topicref-move-down--in-relcell": {
+		"label": "t__Move one cell down",
+		"description": "t__Move this link one cell down.",
+		"icon": "arrow-down",
+		"steps": {
+			"type": "custom-mutation/move-topicref-to-cell",
+			"data": {
+				"direction": "down"
+			}
+		}
+	},
+
+	":topicref-move-right--in-relcell": {
+		"label": "t__Move one cell right",
+		"description": "t__Move this link one cell to the right.",
+		"icon": "arrow-right",
+		"steps": {
+			"type": "custom-mutation/move-topicref-to-cell",
+			"data": {
+				"direction": "right"
+			}
+		}
+	},
+
+	":topicref-move-left--in-relcell": {
+		"label": "t__Move one cell left",
+		"description": "t__Move this link one cell to the left.",
+		"icon": "arrow-left",
+		"steps": {
+			"type": "custom-mutation/move-topicref-to-cell",
+			"data": {
+				"direction": "left"
+			}
+		}
+	}
+}
