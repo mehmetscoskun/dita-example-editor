@@ -195,7 +195,7 @@ export default function configureSxModule(sxModule) {
 		sxModule,
 		'self::*[fonto:dita-class(., "map/topicref") and @href and (parent::relcell or parent::relcolspec)]',
 		t('link'),
-		'href',
+		mapUsesPermanentReferences ? 'href' : null,
 		{
 			priority: 3,
 			contextualOperations: [

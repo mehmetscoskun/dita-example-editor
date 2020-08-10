@@ -54,7 +54,7 @@ export default function configureSxModule(sxModule) {
 		sheetFrameHeaderComponentName: configurationManager.get('app/use-sheet-frame-headers')
 			? 'DefaultSheetFrameHeader'
 			: null,
-		visibleChildSelectorOrNodeSpec: 'self::title'
+		visibleChildSelectorOrNodeSpec: 'self::title or self::reltable'
 	});
 
 	// topicgroup
