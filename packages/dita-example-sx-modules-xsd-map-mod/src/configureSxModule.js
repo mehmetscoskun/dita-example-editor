@@ -9,6 +9,7 @@ import configureAsStructure from 'fontoxml-families/src/configureAsStructure.js'
 import configureAsTitleFrame from 'fontoxml-families/src/configureAsTitleFrame.js';
 import configureProperties from 'fontoxml-families/src/configureProperties.js';
 import createIconWidget from 'fontoxml-families/src/createIconWidget.js';
+import createLabelQueryWidget from 'fontoxml-families/src/createLabelQueryWidget.js';
 import createMarkupLabelWidget from 'fontoxml-families/src/createMarkupLabelWidget.js';
 import createRelatedNodesQueryWidget from 'fontoxml-families/src/createRelatedNodesQueryWidget.js';
 import evaluateXPathToBoolean from 'fontoxml-selectors/src/evaluateXPathToBoolean.js';
@@ -106,13 +107,17 @@ export default function configureSxModule(sxModule) {
 				}
 				const typeValue = evaluateXPathToString('@type', sourceNode, readOnlyBlueprint);
 				return createIconWidget('edit', {
-					tooltipContent: typeValue,
+					isInline: true,
 					clickPopoverComponentName: 'RelcolspecTypePopover',
 					popoverData: {
 						initialTypeValue: typeValue
 					}
 				})(sourceNode, renderer);
-			}
+			},
+			createLabelQueryWidget('self::relcolspec/@type', {
+				inline: true,
+				tooltipQuery: 'self::relcolspec/@type'
+			})
 		],
 		showInsertionWidget: true,
 		showHighlightingWidget: true

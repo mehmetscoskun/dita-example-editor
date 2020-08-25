@@ -36,4 +36,6 @@ const RelcolspecTypePopover = ({ data: { contextNodeId, initialTypeValue }, togg
 	);
 };
 
+RelcolspecTypePopover.hidePopoverInReadOnlyViews = true;
+
 export default RelcolspecTypePopover;
