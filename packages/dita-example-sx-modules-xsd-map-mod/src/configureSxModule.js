@@ -1,7 +1,9 @@
+import applyCss from 'fontoxml-styles/src/applyCss.js';
 import configurationManager from 'fontoxml-configuration/src/configurationManager.js';
 import configureAsBasicTableElements from 'fontoxml-table-flow-basic/src/configureAsBasicTableElements.js';
 import configureAsInlineFrame from 'fontoxml-families/src/configureAsInlineFrame.js';
 import configureAsInlineLink from 'fontoxml-families/src/configureAsInlineLink.js';
+import configureAsInlineObjectInFrame from 'fontoxml-families/src/configureAsInlineObjectInFrame.js';
 import configureAsInlineStructure from 'fontoxml-families/src/configureAsInlineStructure.js';
 import configureAsMapSheetFrame from 'fontoxml-dita/src/configureAsMapSheetFrame.js';
 import configureAsRemoved from 'fontoxml-families/src/configureAsRemoved.js';
@@ -226,29 +228,61 @@ export default function configureSxModule(sxModule) {
 					]
 				}
 			],
-			inlineBefore: [createIconWidget('link')],
-			emptyElementPlaceholderText: 'type the link text',
-			defaultTextContainer: 'topicmeta',
 			popoverComponentName: 'DitaCrossReferencePopover',
 			popoverData: {
 				deleteOperationName: ':contextual-remove-topicref--reltable',
 				targetIsPermanentId: mapUsesPermanentReferences,
 				targetQuery: '@href'
-			}
+			},
+			inlineBefore: [
+				createIconWidget('link', {
+					clickOperation: ':contextual-convert-to-automatic-topicref',
+					tooltipContent: t('Click to make the link text automatically generated')
+				})
+			]
 		}
 	);
 
 	configureProperties(
 		sxModule,
-		'self::*[fonto:dita-class(., "map/topicref") and @href and (parent::relcell or parent::relcolspec) and preceding-sibling::*[fonto:dita-class(., "map/topicref")]]',
+		'self::*[fonto:dita-class(., "map/topicref") and @href and (parent::relcell or parent::relcolspec) and following-sibling::*[fonto:dita-class(., "map/topicref")]]',
 		{
 			priority: 4,
-			inlineBefore: [
+			inlineAfter: [
 				() => {
 					return '\n';
-				},
-				createIconWidget('link')
+				}
 			]
+		}
+	);
+
+	const CROSSREF_STYLES = applyCss({
+		color: '#2196f3',
+		textDecoration: 'underline solid',
+		cursor: 'pointer'
+	});
+	configureAsInlineObjectInFrame(
+		sxModule,
+		`self::*[fonto:dita-class(., "map/topicref") and @href and (parent::relcell or parent::relcolspec)] and
+	(: Ignore any PIs + comments, which are likely placeholders :)
+	 empty((./text(), ./element())) and
+	(: When the selection is here, just render it as a link :)
+	 not(fonto:selection-in-node(.))`,
+		undefined,
+		{
+			priority: 5,
+			createInnerJsonMl: (sourceNode, _renderer) => [
+				'cv-ref',
+				{ ...CROSSREF_STYLES, contentEditable: 'false' },
+				evaluateXPathToString(
+					'import module namespace dita="http://www.fontoxml.com/functions/dita-example"; dita:compute-title(.)',
+					sourceNode,
+					readOnlyBlueprint
+				)
+			],
+			backgroundColor: 'grey',
+			doubleClickOperation: ':contextual-convert-to-manual-topicref',
+			inlineBefore: []
 		}
 	);
 

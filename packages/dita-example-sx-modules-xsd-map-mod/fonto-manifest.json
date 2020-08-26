@@ -1,5 +1,6 @@
 {
 	"dependencies": {
-		"fontoxml-platform-base": "platform/fontoxml-platform-base"
+		"fontoxml-platform-base": "platform/fontoxml-platform-base",
+		"dita-example-attributes-indexes": "packages/dita-example-attributes-indexes"
 	}
 }
