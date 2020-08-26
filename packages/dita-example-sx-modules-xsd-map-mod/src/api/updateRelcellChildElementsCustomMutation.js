@@ -73,8 +73,7 @@ export default function updateRelcellChildElements(argument, blueprint) {
 		);
 
 		if (existingTopicrefNodeIndex === -1) {
-			const refNodeName = evaluateXPathToString('name()', sourceNode, blueprint);
-			const newTopicrefNode = namespaceManager.createElement(contextNode, refNodeName);
+			const newTopicrefNode = namespaceManager.createElement(contextNode, 'topicref');
 			blueprint.setAttribute(newTopicrefNode, 'href', href);
 			blueprint.insertBefore(
 				contextNode,

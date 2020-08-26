@@ -43,7 +43,7 @@
 					"selectedItems": [],
 					"modalTitle": "t__Select topic(s)",
 					"insertOperationName": ":_do-not-submit-empty-array",
-					"showCheckboxSelector": "(self::*[fonto:dita-class(., 'topic/topic') or fonto:dita-class(., 'map/map')][not(parent::*)] and fonto:hierarchy-source-node(fonto:current-hierarchy-node-id())) or self::*[fonto:dita-class(., 'map/topicref') and @href]"
+					"showCheckboxSelector": "(self::*[fonto:dita-class(., 'topic/topic')][not(parent::*)] and fonto:hierarchy-source-node(fonto:current-hierarchy-node-id())) or self::*[fonto:dita-class(., 'map/topicref') and not(self::mapref) and @href]"
 				}
 			},
 			{
@@ -68,7 +68,7 @@
 					"prevSelectedItems": "{{selectedItems}}",
 					"modalTitle": "t__Select topic(s)",
 					"modalPrimaryButtonLabel": "t__Save",
-					"showCheckboxSelector": "(self::*[fonto:dita-class(., 'topic/topic') or fonto:dita-class(., 'map/map')][not(parent::*)] and fonto:hierarchy-source-node(fonto:current-hierarchy-node-id())) or self::*[fonto:dita-class(., 'map/topicref') and @href]"
+					"showCheckboxSelector": "(self::*[fonto:dita-class(., 'topic/topic')][not(parent::*)] and fonto:hierarchy-source-node(fonto:current-hierarchy-node-id())) or self::*[fonto:dita-class(., 'map/topicref') and not(self::mapref) and @href]"
 				}
 			},
 			{
