@@ -273,7 +273,7 @@ export default function configureSxModule(sxModule) {
 			priority: 5,
 			createInnerJsonMl: (sourceNode, _renderer) => [
 				'cv-ref',
-				{ ...CROSSREF_STYLES, contentEditable: 'false' },
+				Object.assign({}, CROSSREF_STYLES, { contentEditable: 'false' }),
 				evaluateXPathToString(
 					'import module namespace dita="http://www.fontoxml.com/functions/dita-example"; dita:compute-title(.)',
 					sourceNode,
