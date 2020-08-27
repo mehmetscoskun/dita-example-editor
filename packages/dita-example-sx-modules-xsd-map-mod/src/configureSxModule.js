@@ -281,6 +281,7 @@ export default function configureSxModule(sxModule) {
 				)
 			],
 			backgroundColor: 'grey',
+			clickOperation: 'select-node',
 			doubleClickOperation: ':contextual-convert-to-manual-topicref',
 			inlineBefore: []
 		}
