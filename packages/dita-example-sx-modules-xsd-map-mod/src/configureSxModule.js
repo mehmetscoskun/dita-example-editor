@@ -3,7 +3,7 @@ import configurationManager from 'fontoxml-configuration/src/configurationManage
 import configureAsBasicTableElements from 'fontoxml-table-flow-basic/src/configureAsBasicTableElements.js';
 import configureAsInlineFrame from 'fontoxml-families/src/configureAsInlineFrame.js';
 import configureAsInlineLink from 'fontoxml-families/src/configureAsInlineLink.js';
-import configureAsInlineObjectInFrame from 'fontoxml-families/src/configureAsInlineObjectInFrame.js';
+import configureAsInlineObject from 'fontoxml-families/src/configureAsInlineObject.js';
 import configureAsInlineStructure from 'fontoxml-families/src/configureAsInlineStructure.js';
 import configureAsMapSheetFrame from 'fontoxml-dita/src/configureAsMapSheetFrame.js';
 import configureAsRemoved from 'fontoxml-families/src/configureAsRemoved.js';
@@ -11,6 +11,7 @@ import configureAsStructure from 'fontoxml-families/src/configureAsStructure.js'
 import configureAsTitleFrame from 'fontoxml-families/src/configureAsTitleFrame.js';
 import configureProperties from 'fontoxml-families/src/configureProperties.js';
 import createIconWidget from 'fontoxml-families/src/createIconWidget.js';
+import createInlineFrameJsonMl from 'fontoxml-families/src/createInlineFrameJsonMl.js';
 import createLabelQueryWidget from 'fontoxml-families/src/createLabelQueryWidget.js';
 import createMarkupLabelWidget from 'fontoxml-families/src/createMarkupLabelWidget.js';
 import createRelatedNodesQueryWidget from 'fontoxml-families/src/createRelatedNodesQueryWidget.js';
@@ -261,7 +262,7 @@ export default function configureSxModule(sxModule) {
 		textDecoration: 'underline solid',
 		cursor: 'pointer'
 	});
-	configureAsInlineObjectInFrame(
+	configureAsInlineObject(
 		sxModule,
 		`self::*[fonto:dita-class(., "map/topicref") and @href and (parent::relcell or parent::relcolspec)] and
 	(: Ignore any PIs + comments, which are likely placeholders :)
@@ -271,16 +272,22 @@ export default function configureSxModule(sxModule) {
 		undefined,
 		{
 			priority: 5,
-			createInnerJsonMl: (sourceNode, _renderer) => [
-				'cv-ref',
-				Object.assign({}, CROSSREF_STYLES, { contentEditable: 'false' }),
-				evaluateXPathToString(
-					'import module namespace dita="http://www.fontoxml.com/functions/dita-example"; dita:compute-title(.)',
+			createInnerJsonMl: (sourceNode, renderer) =>
+				createInlineFrameJsonMl(
+					[
+						'cv-ref',
+						Object.assign({}, CROSSREF_STYLES, { contentEditable: 'false' }),
+						evaluateXPathToString(
+							'import module namespace dita="http://www.fontoxml.com/functions/dita-example"; dita:compute-title(.)',
+							sourceNode,
+							readOnlyBlueprint
+						)
+					],
 					sourceNode,
-					readOnlyBlueprint
-				)
-			],
-			backgroundColor: 'grey',
+					renderer,
+					{ backgroundColor: 'grey', showWhen: 'always' }
+				),
+
 			clickOperation: 'select-node',
 			doubleClickOperation: ':contextual-convert-to-manual-topicref',
 			inlineBefore: []
