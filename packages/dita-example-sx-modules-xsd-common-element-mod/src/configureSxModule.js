@@ -22,7 +22,10 @@ import createMarkupLabelWidget from 'fontoxml-families/src/createMarkupLabelWidg
 import configureAsListElements from 'fontoxml-list-flow/src/configureAsListElements.js';
 import t from 'fontoxml-localization/src/t.js';
 
+import configureFormula from './configureFormula.js';
+
 export default function configureSxModule(sxModule) {
+	configureFormula(sxModule);
 	// alt
 	//     The alt element provides alternate text for an image. It is equivalent to the alt attribute on the
 	//     image element; the attribute is deprecated, so the alt element should be used instead. As an
@@ -396,7 +399,7 @@ export default function configureSxModule(sxModule) {
 	// note
 	//     A <note> element contains information, differentiated from the main text, which expands on or calls
 	//     attention to a particular point. Category: Body elements
-	var NOTE_CONVERT_OPERATIONS = [
+	const NOTE_CONVERT_OPERATIONS = [
 			{ name: ':note-convert-to-@type=null' },
 			{ name: ':note-convert-to-@type=attention' },
 			{ name: ':note-convert-to-@type=caution' },
@@ -471,7 +474,7 @@ export default function configureSxModule(sxModule) {
 	});
 
 	Object.keys(NOTE_VISUALIZATION_BY_TYPE).forEach(function(noteType) {
-		var noteVisualization = NOTE_VISUALIZATION_BY_TYPE[noteType];
+		const noteVisualization = NOTE_VISUALIZATION_BY_TYPE[noteType];
 		configureProperties(sxModule, 'self::note[@type="' + noteType + '"]', {
 			markupLabel: noteVisualization.label,
 			contextualOperations: getContextualOperationsForNoteType(noteType),
@@ -573,6 +576,11 @@ export default function configureSxModule(sxModule) {
 		tabNavigationItemSelector: 'self::stentry',
 		blockHeaderLeft: [createMarkupLabelWidget()]
 	});
+
+	// configureProperties(sxModule, 'self::tm[@tmtype="reg"]', {
+	// 	markupLabel: t('registered trademark'),
+	// 	endDelimiter: '®'
+	// });
 
 	// sl
 	//     The simple list (<sl>) element contains a simple list of items of short, phrase-like content, such

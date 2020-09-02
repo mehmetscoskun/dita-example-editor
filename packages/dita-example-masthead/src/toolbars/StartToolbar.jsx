@@ -37,6 +37,10 @@ const StartToolbar = () => (
 		<MastheadToolbarButtons>
 			<QuickAccessSymbolsDropButton />
 		</MastheadToolbarButtons>
+
+		<MastheadToolbarButtons>
+			<FxOperationButton label="" operationName="insert-formula" />
+		</MastheadToolbarButtons>
 	</MastheadToolbar>
 );
 

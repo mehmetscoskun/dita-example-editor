@@ -1,0 +1,11 @@
+{
+	"insert-formula": {
+		"label": "Formula",
+		"icon": "function",
+		"steps": [
+			{
+				"type": "command/insert-formula"
+			}
+		]
+	}
+}
