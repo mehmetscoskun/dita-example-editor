@@ -5,7 +5,7 @@ import BlueprintPosition from 'fontoxml-blueprints/src/BlueprintPosition.js';
 
 const unsafeInsertNodes = blueprintMutations.unsafeInsertNodes;
 const INITIAL_FORMULA_XML_STRING =
-	'<p><?fontoxml-formula formula=""?>###<?fontoxml-formula-end?></p>';
+	'<p><?fontoxml-formula formula="" dependants=""?>###<?fontoxml-formula-end?></p>';
 
 function draftValidBlueprint(_argument, blueprint, format, selectionRange) {
 	const formulaDocument = parseXmlDocument(INITIAL_FORMULA_XML_STRING);

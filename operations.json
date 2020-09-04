@@ -1,0 +1,1619 @@
+{
+	"undo-macro": {
+		"steps": {
+			"type": "action/undo-macro"
+		}
+	},
+	"append-structure": {
+		"__documentation": {
+			"summary": "Append a structure to the node identified with contextNodeId.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node ID of the node to which to match the root of the stencil."
+				},
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": "A stencil describing the structure to be inserted."
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "(Optional) model to be bound to the stencil before insertion."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in as defined by the stencil instead of the selectionRange"
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "operation/merge-and-insert",
+				"data": {
+					"contextNodeId": "{{contextNodeId}}",
+					"contextStencil": [
+						null,
+						[
+							{
+								"multiple": true,
+								"bindTo": "childNodes"
+							}
+						]
+					],
+					"insertionStencils": {
+						"childNodes.end": {
+							"stencil": "{{childNodeStructure}}",
+							"model": "{{model}}"
+						}
+					}
+				}
+			}
+		]
+	},
+	"apply-model-using-stencil": {
+		"__documentation": {
+			"summary": "Apply a model to the node identified with contextNodeId",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node id of the node to which to match the root of the stencil."
+				},
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": "Stencil containing one or more gaps representing the locations in which to set the values from the model."
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "Object containing properties with the same names as the gaps in the stencil, whose values will be set in the matching locations in the document."
+				}
+			]
+		},
+		"steps": {
+			"type": "command/apply-model-using-stencil",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}",
+				"stencil": "{{stencil}}",
+				"model": "{{model}}"
+			}
+		}
+	},
+	"_backspace-word": {
+		"__documentation": {
+			"summary": "Remove a whole word before the cursor."
+		},
+		"steps": {
+			"type": "command/delete-word",
+			"data": {
+				"isForwards": false
+			}
+		}
+	},
+	"capitalize-selection": {
+		"__documentation": {
+			"summary": "Capitalize the current selection, leaving elements intact.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to operate on instead of the selectionRange"
+				}
+			]
+		},
+		"label": "t__Capitalize",
+		"steps": {
+			"type": "custom-mutation/convert-text-case",
+			"data": {
+				"casing": "capitalize-each-word"
+			}
+		}
+	},
+	"collapse-element": {
+		"__documentation": {
+			"summary": "Replace a node with its children",
+			"fontosdk": true
+		},
+		"label": "t__Collapse element",
+		"description": "t__Replace a node with its children.",
+		"steps": {
+			"type": "command/collapse-element"
+		}
+	},
+	"convert-element": {
+		"__documentation": {
+			"summary": "Convert an element",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The id of the node to convert"
+				},
+				{
+					"name": "nodeNames",
+					"type": "string[]",
+					"description": [
+						"The nodeNames which replace the context node name",
+						"The first valid node in the array, starting",
+						"from the current node name (if the current node",
+						"is not in the array, it start at the beginning)."
+					]
+				}
+			]
+		},
+		"steps": {
+			"type": "custom-mutation/convert-element",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}",
+				"nodeNames": "{{nodeNames}}"
+			}
+		}
+	},
+	"convert-range-to-plain-text": {
+		"__documentation": {
+			"summary": "Collapses any inline formatting or inline frame element (partially) contained in the current selection.",
+			"description": [
+				"This operation collapses any (partially) selected element configured as inline ",
+				"formatting or inline frame. Fully selected elements will be converted completely. ",
+				"Partially selected elements configured as inline formatting will be split at the ",
+				"start and/or end of the selection, this may result in splitting the element(s) in ",
+				"to separate parts. Partially selected elements configured inline frame will be ",
+				"split at the start or end of the selection, but only when that action does not ",
+				"result in splitting the inline frame in two separate parts. This behaviour causes ",
+				"inline frames only to be converted when they are fully selected or when the ",
+				"selection starts outside of the inline frame element and ends in the inline frame ",
+				"element. When the selection is collapsed, this operation tries to extend the ",
+				"selection around any inline formatting or inline frame ancestor. This will only ",
+				"happen when the current selection does not have any sibling inline formatting or ",
+				"inline frame elements. This operation will ignore any other elements."
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to operate on instead of the selectionRange"
+				}
+			]
+		},
+		"label": "t__Clear markup",
+		"description": "t__Remove all markup within the selection.",
+		"icon": "eraser",
+		"steps": {
+			"type": "custom-mutation/convert-range-to-plain-text"
+		}
+	},
+	"convert-selection-to-lowercase": {
+		"__documentation": {
+			"summary": "Convert the current selection to lowercase text, leaving elements intact.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to operate on instead of the selectionRange"
+				}
+			]
+		},
+		"label": "t__To lowercase",
+		"steps": {
+			"type": "custom-mutation/convert-text-case",
+			"data": {
+				"casing": "lowercase"
+			}
+		}
+	},
+	"convert-selection-to-uppercase": {
+		"__documentation": {
+			"summary": "Convert the current selection to uppercase text, leaving elements intact.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to operate on instead of the selectionRange"
+				}
+			]
+		},
+		"label": "t__To uppercase",
+		"steps": {
+			"type": "custom-mutation/convert-text-case",
+			"data": {
+				"casing": "uppercase"
+			}
+		}
+	},
+	"delete-node": {
+		"__documentation": {
+			"summary": "Delete the node referenced by the contextNodeId parameter.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node which will be deleted."
+				}
+			]
+		},
+		"steps": {
+			"type": "command/delete-node"
+		}
+	},
+	"_delete-word": {
+		"__documentation": {
+			"summary": "Remove a whole word after the cursor."
+		},
+		"steps": {
+			"type": "command/delete-word",
+			"data": {
+				"isForwards": true
+			}
+		}
+	},
+	"horizontal-insert": {
+		"__documentation": {
+			"summary": "Insert a new structure somewhere under a node, using the schema for the exact location.",
+			"description": [
+				"Inserts elements for which the parent is known, but the position relative",
+				"to its siblings is restricted by the schema. This operation is most often",
+				"used for contextual operations which insert an optional part of a composition,",
+				"such as a description for a figure. It can also be used for toolbar operations,",
+				"if a transform is first used to determine a suitable context node based on the selection,",
+				"Horizontal-insert prefers the position directly after the current selection",
+				"(like append-structure), but will consider all other positions as well.",
+				"",
+				"After reaching the end of the node, it will overflow to the first position",
+				"under the targeted node.",
+				"",
+				"# Example:",
+				"",
+				"```",
+				"Given a position at the start of parentNode O,",
+				"   with a certain childList,",
+				"   and a childNode X,",
+				"   and a schema: (A (X){0.1} B) (meaning: A, then optionally X, then B).",
+				" The Node O: ",
+				"      O  ",
+				"     / \\ ",
+				"    A   B",
+				"",
+				" The following attempt will be made.",
+				"      O   ",
+				"    / | \\ ",
+				"   X  A  B",
+				"",
+				" This will fail, the next attempt will be:",
+				"      O   ",
+				"    / | \\ ",
+				"   A  X  B",
+				"",
+				" This is valid, the operation will succeed.",
+				"```"
+			],
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The id of the parent under which the new structure may appear"
+				},
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": "A stencil describing the structure to be inserted. This may mention the selection"
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "(Optional) model to be bound to the stencil after insertion."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in as defined by the stencil instead of the selectionRange"
+				}
+			],
+			"fontosdk": true
+		},
+		"steps": {
+			"type": "command/horizontal-insert"
+		}
+	},
+	"insert-next-to-context-node": {
+		"__documentation": {
+			"summary": "Insert the given childNodeStructure after or before the node with the given contextNodeId based on the given side",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The id of the node after which the new structure is inserted."
+				},
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": "A stencil describing the structure to be inserted."
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "(Optional) model to be bound to the stencil before insertion."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in as defined by the stencil instead of the selectionRange"
+				},
+				{
+					"name": "side",
+					"type": "String",
+					"description": "Either 'before' or 'after', to indicate where the childNodeStructure will be inserted in relation to the context node."
+				}
+			]
+		},
+		"steps": {
+			"type": "custom-mutation/insert-next-to-context-node",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}",
+				"childNodeStructure": "{{childNodeStructure}}",
+				"model": "{{model}}",
+				"side": "{{side}}"
+			}
+		}
+	},
+	"insert-after-selection": {
+		"__documentation": {
+			"summary": "Insert a structure after the current selection, as a child of the node identified with contextNodeId",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The id of the node which is to become the parent of the new structure."
+				},
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": "A stencil describing the structure to be inserted."
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "(Optional) model to be bound to the stencil before insertion."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in as defined by the stencil instead of the selectionRange"
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "operation/merge-and-insert",
+				"data": {
+					"contextNodeId": "{{contextNodeId}}",
+					"contextStencil": [
+						null,
+						[
+							{
+								"multiple": true
+							}
+						],
+						[
+							{
+								"bindTo": "nonSelectedNodes",
+								"multiple": true,
+								"doesNotContainSelection": "after"
+							}
+						]
+					],
+					"insertionStencils": {
+						"nonSelectedNodes.start": {
+							"stencil": "{{childNodeStructure}}",
+							"model": "{{model}}"
+						}
+					}
+				}
+			}
+		]
+	},
+	"insert-before-selection": {
+		"__documentation": {
+			"summary": "Insert a structure before the current selection, as a child of the node identified with contextNodeId",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The id of the node which is to become the parent of the new structure."
+				},
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": "A stencil describing the structure to be inserted."
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "(Optional) model to be bound to the stencil before insertion."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in as defined by the stencil instead of the selectionRange"
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "operation/merge-and-insert",
+				"data": {
+					"contextNodeId": "{{contextNodeId}}",
+					"contextStencil": [
+						null,
+						[
+							{
+								"bindTo": "nonSelectedNodes",
+								"multiple": true,
+								"doesNotContainSelection": "before"
+							}
+						],
+						[
+							{
+								"multiple": true
+							}
+						]
+					],
+					"insertionStencils": {
+						"nonSelectedNodes.end": {
+							"stencil": "{{childNodeStructure}}",
+							"model": "{{model}}"
+						}
+					}
+				}
+			}
+		]
+	},
+	"insert-text-or-process-macro": {
+		"steps": [
+			{
+				"type": "command/insertText"
+			},
+			{
+				"type": "action/process-text-insertion-macro"
+			}
+		]
+	},
+	"insert-text": {
+		"__documentation": {
+			"summary": "Insert text",
+			"description": [
+				"Insert text, if the current selection contained nodes, they are first removed.",
+				"",
+				"This operation is bound to all keypresses in the content view.",
+				"It can also be used for inserting a constant string of text at the current selection."
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "text",
+					"type": "string",
+					"description": "The text which should be inserted. _Not_ limited to a single character."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to operate on instead of the selectionRange"
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "command/insertText"
+			}
+		]
+	},
+	"replace-text": {
+		"__documentation": {
+			"summary": "Replace the contents of a selection with a new string",
+			"description": [
+				"Insert text, if the current selection contained nodes, they are first removed.",
+				"",
+				"This operation is bound to all keypresses in the content view and is used for IME interaction"
+			],
+			"params": [
+				{
+					"name": "overrideRange.startContainerNodeId",
+					"type": "NodeId",
+					"description": [
+						"The start container of the range. Should always be before the end container,",
+						"in document order."
+					]
+				},
+				{
+					"name": "overrideRange.startOffset",
+					"type": "number",
+					"description": [
+						"Index among the start container's childNodes or characters (if it is a text node)",
+						"at which to start the selection."
+					]
+				},
+				{
+					"name": "overrideRange.endContainerNodeId",
+					"type": "NodeId",
+					"description": [
+						"The end container of the range. Should always be after the start container, in DOM order."
+					]
+				},
+				{
+					"name": "overrideRange.endOffset",
+					"type": "number",
+					"description": [
+						"Index among the end container's childNodes or characters (if it is a text node)",
+						"at which to end the selection."
+					]
+				},
+				{
+					"name": "text",
+					"type": "string",
+					"description": "The text to insert"
+				},
+				{
+					"name": "shouldMoveSelection",
+					"type": "boolean",
+					"description": "Whether the selection should be set to another place."
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "command/replace-text"
+			},
+			{
+				"type": "action/process-text-insertion-macro"
+			}
+		]
+	},
+	"merge-and-insert": {
+		"__documentation": {
+			"summary": "Merge a structure with the passed structure, and insert new structures within it.",
+			"description": [
+				" Merge the contextStencil with the contextNode, and insert the insertionStencils.",
+				"",
+				" # Usage:",
+				"",
+				" ```",
+				"                                              .------------------------------------------------.",
+				" \"data\": {                                    | Note: do not forget optional multiple gap(s)   |",
+				"     \"contextNodeId\": \"42\",                   |  if the parent may contain other nodes         |",
+				"     \"contextStencil\": [                      '------------------------------------------------'",
+				"         \"someElement\",                                .-------------'|",
+				"         [{ \"required\": false, \"multiple\": true }],    |",
+				"         [                                     .----------------------'",
+				"             \"someElementWhichMightExist\",    |",
+				"             [{ \"required\": false, \"multiple\": true }]",
+				"             [{ \"bindTo\": \"newElement\", \"empty\": true ]}",
+				"         ]                '--------'",
+				"     ],                         '.      .----------------------------------------------------------.",
+				"     \"insertionStencils\": {       >-----| Note: bindTo corresponds to the key in insertionStencils |",
+				"         .---------.-------------'      '----------------------------------------------------------'",
+				"         \"newElement\": {",
+				"             \"stencil\": [",
+				"                 \"someNewElement\",",
+				"                 {",
+				"                     \"someAttribute\", { \"bindTo\": \"someAttributeValue\" }",
+				"                 }",
+				"             ],",
+				"             \"model\": {",
+				"                 \"someAttributeValue\": \"value_0\"",
+				"             }",
+				"         }",
+				"     }",
+				"```",
+				"",
+				" This example will do the following:",
+				" - It might add a 'someElementWhichMightExist' if it doesn't exist",
+				" - It will add an element 'someNewElement' under the 'someElementWhichMightExist'",
+				" - It will set the attribute in 'someNewElement'",
+				"",
+				" Another example: append-structure",
+				"",
+				" Merge and insert is used for implementing the append-structure operation:",
+				"",
+				"```",
+				"\"append-structure\": {",
+				"    \"steps\": {",
+				"        \"type\": \"operation/merge-and-insert\",",
+				"        \"data\": {",
+				"          \"contextNodeId\": \"{{contextNodeId}}\",",
+				"           \"contextStencil\": [",
+				"        null,",
+				"                [{ \"multiple\": true, \"bindTo\": \"childNodes\"}]",
+				"          ],",
+				"             \"insertionStencils\": {",
+				"                   \"childNodes.end\": {",
+				"                           \"stencil\": \"{{childNodeStructure}}\",",
+				"                       \"model\": \"{{model}}\"",
+				"               }",
+				"           }",
+				"        }",
+				"   }",
+				"}",
+				"```",
+				"",
+				" This example works by generating the needed context from the context node,",
+				" matching it as the root of the structure. It then attempts to match all childNodes",
+				" in a named gap. This named gap will generate a range, having a start and an end.",
+				" Inserting at the end position effectively appends a structure.",
+				"",
+				" Given the aforementioned stencil and the following the (DOM) tree:",
+				"",
+				"```",
+				"    O    ",
+				"   / \\   ",
+				"  A   B  ",
+				"",
+				" The stencil will match this way:",
+				"     O ",
+				"    / \\ ",
+				"   A   B ",
+				" |       '- childNodes.end",
+				"  'childNodes.start",
+				"```",
+				"",
+				" Inserting at childNodes.end, the position after B will be used for inserting.",
+				"",
+				" # Example: creating optional structures",
+				"",
+				" Use case: a body may optionally have an optional list element as the last child.",
+				" In that list, we want to append an item, with a given text. If this list does not",
+				" yet exist, create it.",
+				"",
+				"```",
+				" \"insert-item\": {",
+				"   \"steps\": {",
+				"        \"type\": \"operation/merge-and-insert\",",
+				"        \"data\": {",
+				"          \"contextNodeId\": \"{{contextNodeId}}\",",
+				"           \"contextStencil\": [",
+				"        \"body\",",
+				"                   [{ \"multiple\": true}],",
+				"        [",
+				"          \"list\",",
+				"          [{ \"bindTo\": \"items\", \"multiple\": true }]",
+				"        ]",
+				"          ],",
+				"             \"insertionStencils\": {",
+				"                   \"items.end\": {",
+				"                           \"stencil\": [\"item\", [{ \"bindTo\": \"textContent\", \"required\": false}]],",
+				"                       \"model\": { \"textContent\": \"{{itemText}}\" ]",
+				"               }",
+				"           }",
+				"        }",
+				"   }",
+				" }",
+				"```",
+				"",
+				" This works by matching the body as the root, then matching a list, if it exists.",
+				" If it does not, it will create it. It will then use an append-structure like approach",
+				" to append the item at items.end."
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextStencil",
+					"type": "StencilJsonML",
+					"description": [
+						"A stencil describing the structure in which to perform the insertions.",
+						"Should contain a named gap for each insertion to be performed."
+					]
+				},
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The id of the node with which the stencil is aligned."
+				},
+				{
+					"name": "insertionStencils",
+					"type": "Object<string, StencilJsonML>",
+					"description": [
+						"Mapping from position names referencing the context stencil to objects",
+						"containing a stencil and optional model to be inserted at the corresponding location.",
+						"If the targeted gap is of a range type, all possible positions will be considered.",
+						"If the selection is positioned in this range, the position directly after it will",
+						"be considered first."
+					]
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in as defined by the stencil instead of the selectionRange"
+				}
+			]
+		},
+		"steps": {
+			"type": "command/merge-and-insert"
+		}
+	},
+	"move-to-end-of-element": {
+		"__documentation": {
+			"summary": [
+				"Move the specified node to the last position in its parent"
+			],
+			"description": [
+				"Move the specified node to the last position in its parent where it is",
+				"still schema-valid. This operations is disabled if no such position exists",
+				"after the current position."
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to move"
+				}
+			]
+		},
+		"steps": {
+			"type": "command/move-to-end-of-element",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}"
+			}
+		}
+	},
+	"move-to-start-of-element": {
+		"__documentation": {
+			"summary": [
+				"Move the specified node to the first position in its parent"
+			],
+			"description": [
+				"Move the specified node to the first position in its parent where it is",
+				"still schema-valid. This operations is disabled if no such position exists",
+				"before the current position."
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to move"
+				}
+			]
+		},
+		"steps": {
+			"type": "command/move-to-start-of-element",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}"
+			}
+		}
+	},
+	"replace-node": {
+		"__documentation": {
+			"summary": "Removes a node and its descendants from the document, inserting a new structure in its place.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to replace"
+				},
+				{
+					"name": "replacementNodeStructure",
+					"type": "StencilJsonML",
+					"description": [
+						"A stencil describing the structure to be inserted in place of the removed node.",
+						"This stencil may mention the selection."
+					]
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "Model to be bound to the stencil after insertion."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in as defined by the stencil instead of the selectionRange"
+				}
+			]
+		},
+		"steps": {
+			"type": "command/replace-node",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}",
+				"replacementNodeStructure": "{{replacementNodeStructure}}",
+				"model": "{{model}}"
+			}
+		}
+	},
+	"select-node": {
+		"__documentation": {
+			"summary": "Select the whole node. The selection is wrapped _around_ the node.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to select"
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in instead of the selectionRange"
+				}
+			],
+			"see": [
+				"select-node-contents"
+			]
+		},
+		"steps": [
+			{
+				"type": "command/select-node"
+			}
+		]
+	},
+	"select-node-contents": {
+		"__documentation": {
+			"summary": "Select the whole node. The selection is wrapped around _the contents_ the node.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to select"
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in instead of the selectionRange"
+				}
+			],
+			"see": [
+				"select-node"
+			]
+		},
+		"steps": [
+			{
+				"type": "command/select-node-contents"
+			}
+		]
+	},
+	"set-attributes": {
+		"__documentation": {
+			"summary": "Sets or removes the specified attributes on the specified element.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to change the attributes of."
+				},
+				{
+					"name": "attributes",
+					"type": "Object<string, (string|null)>",
+					"description": "The new attributes of the node. Pass null as a value to remove the attribute."
+				},
+				{
+					"name": "[disabledWhenUnchanged=false]",
+					"type": "boolean",
+					"description": "If true, the operation will return disabled and active if it did nothing."
+				}
+			]
+		},
+		"steps": {
+			"type": "command/set-attributes"
+		}
+	},
+	"set-cursor-after-node": {
+		"__documentation": {
+			"summary": "Place the cursor after the specified node.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to set the cursor after."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in instead of the selectionRange"
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "command/set-cursor-next-to-node",
+				"data": {
+					"toAfter": true
+				}
+			}
+		]
+	},
+	"set-cursor-before-node": {
+		"__documentation": {
+			"summary": "Place the cursor before the specified node.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to set the cursor after."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in instead of the selectionRange"
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "command/set-cursor-next-to-node",
+				"data": {
+					"toAfter": false
+				}
+			}
+		]
+	},
+	"set-cursor-to-first-text-position": {
+		"__documentation": {
+			"summary": [
+				"Place the cursor at the first position where inserting text is possible.",
+				"Note that this operation will not cross 'closed' boundaries,",
+				"like the boundaries of a {@link configureAsSheetFrame sheetframe},",
+				"an {@link configureAsOutOfOrderStructure out of order structure} or",
+				"the boundaries of an {@link configureAsObject object}."
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to place the cursor in."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in instead of the selectionRange"
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "command/set-cursor-to-first-or-last-text-position",
+				"data": {
+					"useLastPosition": false
+				}
+			}
+		]
+	},
+	"set-cursor-to-last-text-position": {
+		"__documentation": {
+			"summary": [
+				"Place the cursor at the last position where inserting text is possible.",
+				"Note that this operation will not cross 'closed' boundaries,",
+				"like the boundaries of a {@link configureAsSheetFrame sheetframe},",
+				"an {@link configureAsOutOfOrderStructure out of order structure} or",
+				"the boundaries of an {@link configureAsObject object}."
+			],
+			"description": "This mirrors {@link set-cursor-to-first-text-position}.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to place the cursor in."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in instead of the selectionRange"
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "command/set-cursor-to-first-or-last-text-position",
+				"data": {
+					"useLastPosition": true
+				}
+			}
+		]
+	},
+	"set-selection": {
+		"__documentation": {
+			"summary": "Place the selection at the given positions.",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "selectionRange",
+					"type": "Object",
+					"description": "The new range"
+				},
+				{
+					"name": "selectionRange.startContainerNodeId",
+					"type": "NodeId",
+					"description": [
+						"The start container of the range. Should always be before the end container,",
+						"in document order."
+					]
+				},
+				{
+					"name": "selectionRange.startOffset",
+					"type": "number",
+					"description": [
+						"Index among the start container's childNodes or characters (if it is a text node)",
+						"at which to start the selection."
+					]
+				},
+				{
+					"name": "selectionRange.endContainerNodeId",
+					"type": "NodeId",
+					"description": [
+						"The end container of the range. Should always be after the start container, in DOM order."
+					]
+				},
+				{
+					"name": "selectionRange.endOffset",
+					"type": "number",
+					"description": [
+						"Index among the end container's childNodes or characters (if it is a text node)",
+						"at which to end the selection."
+					]
+				},
+				{
+					"name": "selectionIsBackwards",
+					"type": "boolean",
+					"description": [
+						"Use this option to set the direction of the selection explicitly.",
+						"Note that using this property does not influence the fact that the",
+						"start position should be before the end position"
+					]
+				},
+				{
+					"name": "[hierarchyNodeId]",
+					"type": "HierarchyNodeId",
+					"description": [
+						"Optionally, provide the hierarchy node ID under which to consider this selection. This",
+						"is used in cases where a document appears in the hierarchy multiple times. If omitted,",
+						"Fonto prefers the same hierarchy node as the current (if the selection is in the same sheet",
+						"frame), the sheet frame that most recently had the cursor in it, or the first occurrence in",
+						"the {@link DocumentsHierarchy}."
+					]
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "command/set-selection",
+				"data": {
+					"forceFocusedDocumentChange": true,
+					"selectionRange": "{{selectionRange}}",
+					"hierarchyNodeId": "{{hierarchyNodeId}}"
+				}
+			}
+		]
+	},
+	"split-and-insert": {
+		"__documentation": {
+			"summary": "Split a node in two, wrap the latter part, and insert it after the selection.",
+			"description": [
+				"This can be used to split a paragraph into a paragraph and some thing else,",
+				"wrapping the part of the paragraph after the start of the selection into the other node.",
+				"",
+				"There is no mirrored equivalent of this operation.",
+				"",
+				"# Example",
+				"",
+				"```",
+				"\"something-insert\": {",
+				"  \"description\": \"inserts a something.\",",
+				"  \"steps\": [",
+				"    {",
+				"      \"type\": \"transform/setContextNodeIdToSelectionAncestor\",",
+				"      \"data\": {\"selectionAncestorNodeSpec\": \"self::someAncestor\"}",
+				"    },",
+				"    {",
+				"       \"type\": \"operation/split-and-insert\",",
+				"       \"data\": {",
+				"         \"childNodeStructure\": [",
+				"           \"something\",",
+				"           [{\"multiple\": true, \"bindTo\": \"remainder\"}]",
+				"         ],",
+				"         \"contextNodeId\": \"{{contextNodeId}}\",",
+				"         \"splitUntilNodeSpecOrSelector\": \"self::someParent\"",
+				"       }",
+				"     }",
+				"  ]",
+				"}",
+				"```",
+				"",
+				"This will perform the following mutation:",
+				"",
+				"```",
+				"<!-- input -->",
+				"<someAncestor>",
+				"  <someParent>",
+				"     A piece of text with the cursor HERE, and more text",
+				"  </someParent>",
+				"</someAncestor>",
+				"<!-- output -->",
+				"<someAncestor>",
+				"  <someParent>",
+				"     A piece of text with the cursor HE",
+				"  </someParent>",
+				"  <something>",
+				"     RE, and more text",
+				"  </something>",
+				"</someAncestor>",
+				"```"
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to place the cursor in."
+				},
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": [
+						"A stencil describing the structure to be inserted.",
+						"The stencil should contain a single optional gap called remainder,",
+						"indicating the position in the structure where the selected content will be placed.",
+						"A gap called selection in this stencil can be used to influence the position",
+						"of the selection after the operation is executed."
+					]
+				},
+				{
+					"name": "model",
+					"type": "Object",
+					"description": "model to be bound to the stencil after insertion."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to operate on instead of the selectionRange"
+				},
+				{
+					"name": "[splitUntilNodeSpecOrSelector]",
+					"type": "XPathTest",
+					"description": [
+						"(Optional, either pass this or splitUntilAncestorThatMatchesOneOf)",
+						"Selector used to find the node until where a split must happen.",
+						"Must match an ancestor of the context node, or the contextNode itself."
+					]
+				},
+				{
+					"name": "[splitUntilAncestorThatMatchesOneOf]",
+					"type": "XPathTest[]",
+					"description": [
+						"(Optional, either pass this or splitUntilNodeSpecOrSelector)",
+						"Selectors used to find the ancestor which must be split. Should be an array of selectors."
+					]
+				}
+			]
+		},
+		"steps": {
+			"type": "command/split-and-insert",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}",
+				"splitUntilNodeSpecOrSelector": "{{splitUntilNodeSpecOrSelector}}",
+				"stencil": "{{stencil}}"
+			}
+		}
+	},
+	"swap-with-next-element": {
+		"__documentation": {
+			"summary": "Swap a node with the next element",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to move"
+				}
+			]
+		},
+		"steps": {
+			"type": "command/swap-with-next-element",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}"
+			}
+		}
+	},
+	"swap-with-previous-element": {
+		"__documentation": {
+			"summary": "Swap a node with the previous element",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The node to move"
+				}
+			]
+		},
+		"steps": {
+			"type": "command/swap-with-previous-element",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}"
+			}
+		}
+	},
+	"vertical-insert": {
+		"__documentation": {
+			"summary": "Vertically insert a node.",
+			"description": [
+				"Inserts the given structure as close to the selection as possible.",
+				"The structure is inserted under the closest ancestor node that will allow it.",
+				"The operation will split ancestor elements as necessary, if allowed by their",
+				"configured family, but will always prefer to exit an element if no content",
+				"needs to be skipped to do so.",
+				"",
+				"#tip:",
+				"",
+				"If the selection is not empty, vertical-insert will insert the structure at the start",
+				"(or end) of the selection, leaving contents intact. Usually, users will expect the",
+				"selected content to be replaced. Therefore we recommend to use vertical-replace in",
+				"most cases, unless there is a specific reason not to remove the selected content."
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": "A stencil describing the structure to be inserted."
+				},
+				{
+					"name": "[insertAtEnd=false]",
+					"type": "boolean",
+					"description": [
+						"True to insert the structure at the end of the current selection.",
+						"Defaults to inserting at the start."
+					]
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "(Optional) model to be bound to the stencil after insertion"
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to operate on instead of the selectionRange"
+				},
+				{
+					"name": "[ultimateParentNodeId]",
+					"type": "NodeId",
+					"description": [
+						"The highest ancestor of the insertion position under which the insertion can take place.",
+						"By default, all ancestors of the insertion position are considered."
+					]
+				}
+			]
+		},
+		"steps": {
+			"type": "command/vertical-insert",
+			"data": {
+				"childNodeStructure": "{{childNodeStructure}}",
+				"model": "{{model}}",
+				"ultimateParentNodeId": "{{ultimateParentNodeId}}"
+			}
+		}
+	},
+	"vertical-replace": {
+		"__documentation": {
+			"summary": "Vertically replace a node.",
+			"description": [
+				"Removes the content of the selection if it is not empty, then inserts the given",
+				"structure as close to the selection as possible. The structure is inserted under",
+				"the closest ancestor node that will allow it.",
+				"The operation will split ancestor elements as necessary, if allowed by their",
+				"configured family, but will always prefer to exit an element if no content",
+				"needs to be skipped to do so."
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": "A stencil describing the structure to be inserted."
+				},
+				{
+					"name": "[insertAtEnd=false]",
+					"type": "boolean",
+					"description": [
+						"True to insert the structure at the end of the current selection.",
+						"Defaults to inserting at the start."
+					]
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "(Optional) model to be bound to the stencil after insertion"
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to operate on instead of the selectionRange"
+				},
+				{
+					"name": "[ultimateParentNodeId]",
+					"type": "NodeId",
+					"description": [
+						"The highest ancestor of the insertion position under which the insertion can take place.",
+						"By default, all ancestors of the insertion position are considered."
+					]
+				}
+			]
+		},
+		"steps": {
+			"type": "command/vertical-replace",
+			"data": {
+				"childNodeStructure": "{{childNodeStructure}}",
+				"model": "{{model}}",
+				"ultimateParentNodeId": "{{ultimateParentNodeId}}"
+			}
+		}
+	},
+	"wrap-context-node-in-structure": {
+		"__documentation": {
+			"summary": "Wrap the given childNodeStructure around the node with the given contextNodeId at the specified transclude gap in the stencil",
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": "The id of the node around which the new structure is wrapped."
+				},
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": "A stencil describing the structure to wrap the context node in. Should contain a gap named transclude with the multiple property set to true to indicate where the referenced node should appear. The selection gap may be used to set the selection in the new structure."
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "(Optional) model to be bound to the stencil before wrapping."
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to set the selection in as defined by the stencil instead of the selectionRange"
+				}
+			]
+		},
+		"steps": {
+			"type": "custom-mutation/wrap-context-node-in-structure",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}",
+				"childNodeStructure": "{{childNodeStructure}}",
+				"model": "{{model}}"
+			}
+		}
+	},
+	"wrap-selection-in-structure": {
+		"__documentation": {
+			"summary": "Replace the selected content with the specified structure.",
+			"description": [
+				"Replaces the selected content with the specified structure,",
+				"inserted under the specified ancestor of the selection.",
+				"The selected content will be inserted at the specified location within",
+				"the structure to be inserted, effectively 'wrapping' it in the structure.",
+				"",
+				"#tip",
+				"When the selection is empty, the behavior of this operation will be similar",
+				"to vertical-insert (albeit with a pre-determined parent node), causing the",
+				"structure to simply be inserted at the current cursor position.",
+				"Users will often expect the entire containing child of the passed contextNode ",
+				"(usually a paragraph, or similar) to be 'converted' (wrapped inside) to",
+				"the specified structure instead. We therefore recommend to use",
+				"wrap-selection-or-container-in-structure instead, which handles this case in the expected way."
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": [
+						"The node under which the structure is to be inserted"
+					]
+				},
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": [
+						"A stencil describing the structure to be inserted.",
+						"The stencil should contain a single optional multi-node gap called transclude,",
+						"indicating the position in the structure where the selected content will be placed."
+					]
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "(Optional) model to be bound to the stencil after insertion"
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to operate on instead of the selectionRange"
+				},
+				{
+					"name": "[allowNesting=false]",
+					"type": "boolean",
+					"description": "By default, this operation is disabled if it would create a nested structure (if an ancestor of the context node or the context node matches the childNodeStructure stencil). Set this parameter to true to allow nesting."
+				}
+			]
+		},
+		"steps": {
+			"type": "command/wrap-selection-in-structure",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}",
+				"childNodeStructure": "{{childNodeStructure}}",
+				"model": "{{model}}",
+				"allowNesting": "{{allowNesting}}",
+				"wrapContainerIfSelectionIsCollapsed": false
+			}
+		}
+	},
+	"wrap-selection-or-container-in-structure": {
+		"__documentation": {
+			"summary": "Replace the selected content with the specified structure.",
+			"description": [
+				"Replaces the selected content with the specified structure,",
+				"inserted under the specified ancestor of the selection.",
+				"The selected content will be inserted at the specified location within the structure to be inserted,",
+				"effectively 'wrapping' it in the structure. If the selection is empty,",
+				"the child of the specified ancestor containing the selection will be wrapped in its entirety.",
+				"",
+				"# Example",
+				"",
+				"```",
+				" \"note-insert\": {",
+				"       \"label\": \"Note\",",
+				"   \"description\": \"Contains text that is related to the main text.\",",
+				"   \"icon\": \"sticky-note-o\",",
+				"       \"steps\": [",
+				"        {",
+				"            \"type\": \"operation/note-set-context-node-id-to-valid-parent\"",
+				"        },",
+				"        {",
+				"            \"type\": \"operation/wrap-selection-or-container-in-structure\",",
+				"           \"data\": {",
+				"                   \"childNodeStructure\": [",
+				"                     \"note\",",
+				"                       { \"type\": \"note\" },",
+				"                       [{ \"bindTo\": \"selection.start\", \"empty\": true }],",
+				"                       [{ \"bindTo\": \"transclude\", \"multiple\": true, \"required\": false }],",
+				"                       [{ \"bindTo\": \"selection.end\", \"empty\": true }]",
+				"                 ],",
+				"                   \"contextNodeId\": \"{{contextNodeId}}\"",
+				"           }",
+				"        }",
+				"  ]",
+				"```"
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "contextNodeId",
+					"type": "NodeId",
+					"description": [
+						"The node under which the structure is to be inserted"
+					]
+				},
+				{
+					"name": "childNodeStructure",
+					"type": "StencilJsonML",
+					"description": [
+						"A stencil describing the structure to be inserted.",
+						"The stencil should contain a single optional multi-node gap called transclude,",
+						"indicating the position in the structure where the selected content will be placed."
+					]
+				},
+				{
+					"name": "[model]",
+					"type": "Object",
+					"description": "(Optional) model to be bound to the stencil after insertion"
+				},
+				{
+					"name": "[overrideRange]",
+					"type": "OverrideRange",
+					"description": "The range to operate on instead of the selectionRange"
+				},
+				{
+					"name": "[allowNesting=false]",
+					"type": "boolean",
+					"description": "By default, this operation is disabled if it would create a nested structure (if an ancestor of the context node or the context node matches the childNodeStructure stencil). Set this parameter to true to allow nesting."
+				}
+			]
+		},
+		"steps": {
+			"type": "command/wrap-selection-in-structure",
+			"data": {
+				"contextNodeId": "{{contextNodeId}}",
+				"childNodeStructure": "{{childNodeStructure}}",
+				"model": "{{model}}",
+				"allowNesting": "{{allowNesting}}",
+				"wrapContainerIfSelectionIsCollapsed": true
+			}
+		}
+	},
+	"execute-update-script": {
+		"__documentation": {
+			"summary": "Execute an XQuery updating script.",
+			"description": [
+				"Note: this feature is experimental and subject to change.",
+				"",
+				"# Example",
+				"",
+				"```",
+				"{",
+				"    \"replace-a-note\": {",
+				"        \"label\": \"Replace a note with a warning note, using XQUF!\",",
+				"        \"steps\": [",
+				"            {",
+				"                \"type\":\"transform/setContextNodeIdToSelectionAncestor\",",
+				"                \"data\": {",
+				"                    \"selectionAncestorNodeSpec\": \"self::note\"",
+				"                }",
+				"            },",
+				"            {",
+				"                \"type\": \"operation/execute-update-script\",",
+				"                \"data\": {",
+				"                    \"expression\":",
+				"                    \"replace node $data('contextNode') with <note type=\\\"warning\\\">{$data('contextNode')/node()}</note>\",",
+				"                    \"contextNodeId\": \"{{contextNodeId}}\"",
+				"                }",
+				"            }",
+				"        ]",
+				"    }",
+				"}",
+				"```",
+				"",
+				"Note: for each property in `\"data\"` which ends with `(N|n)odeId`, the actual node is retrieved and available in the query with the key without the `Id` postfix.",
+				"",
+				"The following updating expressions are supported, note that functions can also be updating",
+				"",
+				"* [`insert node(s)`](https://www.w3.org/TR/xquery-update-30/#id-insert)",
+				"* [`delete node`](https://www.w3.org/TR/xquery-update-30/#id-delete)",
+				"* [`replace node`](https://www.w3.org/TR/xquery-update-30/#id-replacing-node)",
+				"* [`replace value of node`](https://www.w3.org/TR/xquery-update-30/#id-replacing-node-value)",
+				"* [`rename node`](https://www.w3.org/TR/xquery-update-30/#id-rename)",
+				"* [`copy modify`](https://www.w3.org/TR/xquery-update-30/#id-copy-modify)",
+				"",
+				"You can try out the updating expression on the [fontoxpath playground](https://xpath.playground.fontoxml.com/).",
+				"",
+				"You can set selection in the updating expression by using [selection PIs](https://documentation.fontoxml.com/display/FE/.XQuery+v7.10.0)."
+			],
+			"fontosdk": true,
+			"params": [
+				{
+					"name": "expression",
+					"type": "string",
+					"description": "The expression that should be executed. This expression is passed the `stepData` as a variable called `$data`."
+				}
+			]
+		},
+		"steps": [
+			{
+				"type": "transform/evaluateXQueryUpdateFacilityScript"
+			},
+			{
+				"type": "custom-mutation/executePendingUpdates"
+			}
+		]
+	}
+}

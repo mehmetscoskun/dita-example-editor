@@ -1,0 +1,8 @@
+1. Popover i hazirla
+2. Mutation hook ekle. template te yap bunu
+3. Cursor in resultText ile formula PIs arasina girmesine izin verme
+4. formula PI lari bagli nodelara 2 sekilde baglayabiliriz:
+	a. elementlerde bulunan idleri kullanabiliriz. unique id bulunan her durumda
+	formula yi kullanma kabiliyetimiz olur boylece. (Priority)
+	b. table koordonatlarini kullanabiliriz. Boylece element unique idsine bagimli olmayiz.
+	Ama bu durumda formula yalnizca table larda kullanilabilir.
