@@ -30,54 +30,48 @@ class FormulaTemplate extends JsonMlTemplate {
 				determineCommonVisualizationOptions(sourceNode, renderer)
 			);
 
-			// const unwrappedNode = sourceNode.unwrap();
+			const unwrappedNode = sourceNode.unwrap();
 
-			// const formulaNode = evaluateXPathToFirstNode(
-			// 	'preceding::processing-instruction()[name(.)="fontoxml-formula"]',
-			// 	sourceNode,
-			// 	readOnlyBlueprint
-			// );
-			// const attr = parsePseudoAttributes(formulaNode.data);
-			// const formulaNodeId = getNodeId(formulaNode);
-			// const dependants = attr.dependants.split(',');
-
-			// const nodes = dependants.map(dependant =>
-			// 	getNodeForId(unwrappedNode.ownerDocument, dependant, readOnlyBlueprint)
-			// );
-
-			// const result = evaluateXPathToString('$node', null, readOnlyBlueprint, {
-			// 	node: nodes[0]
-			// });
-			// const range = new BlueprintRange(readOnlyBlueprint);
-			// range.selectNodeContents(unwrappedNode);
-
-			// // replace text is not good enough
-			// // we need to find another command
-			// operationsManager.executeOperation('replace-text', {
-			// 	overrideRange: {
-			// 		startContainerNodeId: getNodeId(range.startContainer),
-			// 		startOffset: range.startOffset,
-			// 		endContainerNodeId: getNodeId(range.endContainer),
-			// 		endOffset: range.endOffset
-			// 	},
-			// 	text: result
-			// });
-
-			const text = evaluateXPathToString(
-				'string-join(following-sibling::text()[preceding-sibling::processing-instruction()[name(.)="fontoxml-formula"] and following-sibling::processing-instruction()[name(.)="fontoxml-formula-end"]])',
+			const formulaNode = evaluateXPathToFirstNode(
+				'preceding::processing-instruction()[name(.)="fontoxml-formula"]',
 				sourceNode,
 				readOnlyBlueprint
 			);
+			const attr = parsePseudoAttributes(formulaNode.data);
+			const formulaNodeId = getNodeId(formulaNode);
+			const dependants = attr.dependants.split(',');
+
+			const nodes = dependants.map(dependant =>
+				getNodeForId(unwrappedNode.ownerDocument, dependant, readOnlyBlueprint)
+			);
+
+			const result = evaluateXPathToString('$node', null, readOnlyBlueprint, {
+				node: nodes[0]
+			});
+			const range = new BlueprintRange(readOnlyBlueprint);
+			range.selectNodeContents(unwrappedNode);
+
+			// replace text is not good enough
+			// we need to find another command
+			operationsManager.executeOperation('replace-text', {
+				overrideRange: {
+					startContainerNodeId: getNodeId(range.startContainer),
+					startOffset: range.startOffset,
+					endContainerNodeId: getNodeId(range.endContainer),
+					endOffset: range.endOffset
+				},
+				text: result
+			});
 
 			const popoverDetails = {
 				'popover-component-name': 'FormulaPopover',
 				'popover-context-node-id': sourceNode.nodeId,
-				'popover-data': JSON.stringify({ contextNodeId: sourceNode.nodeId }),
+				'popover-data': JSON.stringify({ contextNodeId: formulaNodeId }),
 				'block-context-menu': 'true',
 				'block-selection-change-on-click': 'true',
 				'contenteditable': false,
-				'style': 'cursor:pointer;'
-				// 'result': result
+				'style': 'cursor:pointer;',
+				'result': result
 			};
 
 			const attributes = Object.assign(
@@ -87,7 +81,7 @@ class FormulaTemplate extends JsonMlTemplate {
 			);
 
 			return createInlineFrameJsonMl(
-				['cv-content', attributes, text],
+				['cv-content', attributes, sourceNode.data],
 				sourceNode,
 				renderer,
 				finalVisualization
